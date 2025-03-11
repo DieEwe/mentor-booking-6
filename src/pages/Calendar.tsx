@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { format } from "date-fns";
+
+import { useState, useMemo } from "react";
+import { format, isSameDay } from "date-fns";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { mockUsers } from "../types/auth";
 import { useTheme } from "../contexts/ThemeContext";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { EventDetails } from "@/components/EventDetails";
 
 const Calendar = () => {
   const { language } = useTheme();
@@ -35,11 +37,28 @@ const Calendar = () => {
   };
 
   // Filter events by selected date
-  const selectedDateEvents = mockEvents.filter(
-    (event) => event.date === date?.toISOString().split("T")[0]
-  );
+  const selectedDateEvents = mockEvents.filter((event) => {
+    const eventDate = new Date(event.date);
+    return date ? isSameDay(eventDate, date) : false;
+  });
 
-  // Get status color
+  // Custom day rendering for the calendar to show events
+  const eventsByDate = useMemo(() => {
+    const events: Record<string, number> = {};
+    
+    mockEvents.forEach(event => {
+      const dateKey = event.date;
+      if (events[dateKey]) {
+        events[dateKey] += 1;
+      } else {
+        events[dateKey] = 1;
+      }
+    });
+    
+    return events;
+  }, [mockEvents]);
+
+  // Function to get event status color
   const getStatusColor = (status: string) => {
     switch (status) {
       case "wanted":
@@ -53,7 +72,7 @@ const Calendar = () => {
     }
   };
 
-  // Get status text
+  // Function to get status text with translation
   const getStatusText = (status: string) => {
     if (language === "en") {
       switch (status) {
@@ -87,7 +106,7 @@ const Calendar = () => {
       </h1>
       
       <div className="flex flex-col lg:flex-row gap-6">
-        <Card className="p-6 glass">
+        <Card className="p-6 glass lg:w-2/3">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
@@ -112,6 +131,7 @@ const Calendar = () => {
               </Button>
             </div>
           </div>
+          
           <CalendarComponent
             mode="single"
             selected={date}
@@ -120,6 +140,44 @@ const Calendar = () => {
             onMonthChange={setCurrentMonth}
             className="rounded-md pointer-events-auto"
             showOutsideDays={true}
+            modifiers={{
+              hasEvent: (day) => {
+                const dateString = day.toISOString().split('T')[0];
+                return !!eventsByDate[dateString];
+              }
+            }}
+            modifiersStyles={{
+              hasEvent: {
+                backgroundColor: 'rgba(var(--primary-rgb), 0.1)',
+                fontWeight: 'bold',
+                position: 'relative'
+              }
+            }}
+            components={{
+              DayContent: ({ date, ...props }) => {
+                const dateString = date.toISOString().split('T')[0];
+                const count = eventsByDate[dateString] || 0;
+                
+                return (
+                  <div className="relative flex items-center justify-center w-full h-full">
+                    <div {...props}>
+                      {date.getDate()}
+                    </div>
+                    {count > 0 && (
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 flex gap-0.5">
+                        {count > 3 ? (
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
+                        ) : (
+                          Array.from({ length: Math.min(count, 3) }).map((_, i) => (
+                            <span key={i} className="inline-block w-1 h-1 rounded-full bg-primary" />
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+            }}
           />
           
           <div className="mt-4">
@@ -155,39 +213,13 @@ const Calendar = () => {
             {selectedDateEvents.length > 0 ? (
               <div className="space-y-4">
                 {selectedDateEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="p-4 rounded-lg border bg-card text-card-foreground hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium text-lg">{event.company}</p>
-                          <Badge className={getStatusColor(event.status)}>
-                            {getStatusText(event.status)}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {event.time} - {event.coachName}
-                        </p>
-                        {event.mentorId && (
-                          <p className="text-sm mt-1">
-                            {language === "en" ? "Mentor: " : "Mentor: "}
-                            <span className="font-medium">
-                              {mockUsers.find(u => u.id === event.mentorId)?.firstName} 
-                              {" "}
-                              {mockUsers.find(u => u.id === event.mentorId)?.lastName}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2 items-center">
-                        <p className="text-sm bg-secondary px-3 py-1 rounded-full">
-                          {language === "en" ? "Column" : "Spalte"} {event.column}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <EventDetails 
+                    key={event.id} 
+                    event={event} 
+                    language={language} 
+                    getStatusText={getStatusText}
+                    getStatusColor={getStatusColor}
+                  />
                 ))}
               </div>
             ) : (

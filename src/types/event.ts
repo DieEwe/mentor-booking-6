@@ -41,5 +41,52 @@ export const mockEvents: Event[] = [
     company: 'Code Co',
     column: 3,
     status: 'process'
+  },
+  {
+    id: '4',
+    date: '2024-03-25',
+    time: '10:00',
+    coachName: 'Sarah Williams',
+    company: 'Data Systems',
+    column: 1,
+    status: 'wanted'
+  },
+  {
+    id: '5',
+    date: '2024-03-25',
+    time: '14:30',
+    coachName: 'Robert Chen',
+    company: 'AI Research',
+    column: 2,
+    status: 'process'
+  },
+  {
+    id: '6',
+    date: '2024-03-27',
+    time: '09:00',
+    coachName: 'Emma Davis',
+    company: 'Cloud Solutions',
+    column: 3,
+    mentorId: '3',
+    status: 'found'
+  },
+  {
+    id: '7',
+    date: '2024-03-28',
+    time: '11:00',
+    coachName: 'Daniel Wilson',
+    company: 'Security Systems',
+    column: 2,
+    status: 'wanted'
+  },
+  {
+    id: '8',
+    date: '2024-03-30',
+    time: '16:30',
+    coachName: 'Olivia Brown',
+    company: 'Mobile Apps',
+    column: 1,
+    mentorId: '1',
+    status: 'found'
   }
 ];

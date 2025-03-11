@@ -83,6 +83,9 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.3s ease-in-out",
       },
+      cssVariables: {
+        '--primary-rgb': '221, 70, 135', // Example RGB value for a primary color
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
