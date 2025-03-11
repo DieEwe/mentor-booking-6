@@ -12,11 +12,10 @@ export interface Event {
   status: EventStatus;
 }
 
-// Mock data - TODO: Replace with Supabase Database
 export const mockEvents: Event[] = [
   {
     id: '1',
-    date: '2024-03-20',
+    date: '2025-03-15',
     time: '14:00',
     coachName: 'John Doe',
     company: 'Tech Corp',
@@ -25,7 +24,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '2',
-    date: '2024-03-21',
+    date: '2025-03-18',
     time: '15:00',
     coachName: 'Jane Smith',
     company: 'Dev Inc',
@@ -35,7 +34,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '3',
-    date: '2024-03-22',
+    date: '2025-03-22',
     time: '16:00',
     coachName: 'Mike Johnson',
     company: 'Code Co',
@@ -44,7 +43,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '4',
-    date: '2024-03-25',
+    date: '2025-04-05',
     time: '10:00',
     coachName: 'Sarah Williams',
     company: 'Data Systems',
@@ -53,7 +52,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '5',
-    date: '2024-03-25',
+    date: '2025-04-12',
     time: '14:30',
     coachName: 'Robert Chen',
     company: 'AI Research',
@@ -62,7 +61,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '6',
-    date: '2024-03-27',
+    date: '2025-04-15',
     time: '09:00',
     coachName: 'Emma Davis',
     company: 'Cloud Solutions',
@@ -72,7 +71,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '7',
-    date: '2024-03-28',
+    date: '2025-04-20',
     time: '11:00',
     coachName: 'Daniel Wilson',
     company: 'Security Systems',
@@ -81,7 +80,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: '8',
-    date: '2024-03-30',
+    date: '2025-04-25',
     time: '16:30',
     coachName: 'Olivia Brown',
     company: 'Mobile Apps',
