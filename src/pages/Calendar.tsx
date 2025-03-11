@@ -1,15 +1,16 @@
-import { useState, useMemo } from "react";
-import { format, isSameDay } from "date-fns";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { mockEvents } from "../types/event";
 import { useTheme } from "../contexts/ThemeContext";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import EventModal from "@/components/EventModal";
 import type { Event } from "../types/event";
+import CalendarHeader from "@/components/calendar/CalendarHeader";
+import CalendarLegend from "@/components/calendar/CalendarLegend";
+import CalendarDay from "@/components/calendar/CalendarDay";
+import { useCalendarEvents } from "@/components/calendar/useCalendarEvents";
+import { useStatusHelpers } from "@/components/calendar/StatusUtils";
 
 const Calendar = () => {
   const { language } = useTheme();
@@ -18,11 +19,8 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Function to format events date for display
-  const formatEventDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return format(date, language === "en" ? "MMMM d, yyyy" : "d. MMMM yyyy");
-  };
+  const { eventsByDate, getEventsBySelectedDate } = useCalendarEvents(mockEvents);
+  const { getStatusText, getStatusColor } = useStatusHelpers();
 
   // Handle month navigation
   const previousMonth = () => {
@@ -37,73 +35,13 @@ const Calendar = () => {
     setCurrentMonth(nextMonth);
   };
 
-  // Function to get event status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "wanted":
-        return "bg-status-wanted text-white";
-      case "process":
-        return "bg-status-process text-white";
-      case "found":
-        return "bg-status-found text-white";
-      default:
-        return "bg-muted";
-    }
-  };
-
-  // Function to get status text with translation
-  const getStatusText = (status: string) => {
-    if (language === "en") {
-      switch (status) {
-        case "wanted":
-          return "Mentors wanted";
-        case "process":
-          return "In process";
-        case "found":
-          return "Mentors found";
-        default:
-          return status;
-      }
-    } else {
-      switch (status) {
-        case "wanted":
-          return "Mentoren gesucht";
-        case "process":
-          return "In Bearbeitung";
-        case "found":
-          return "Mentoren gefunden";
-        default:
-          return status;
-      }
-    }
-  };
-
-  // Filter events by selected date
-  const selectedDateEvents = mockEvents.filter((event) => {
-    const eventDate = new Date(event.date);
-    return date ? isSameDay(eventDate, date) : false;
-  });
-
-  // Custom day rendering for the calendar to show events
-  const eventsByDate = useMemo(() => {
-    const events: Record<string, Event[]> = {};
-    
-    mockEvents.forEach(event => {
-      const dateKey = event.date;
-      if (events[dateKey]) {
-        events[dateKey].push(event);
-      } else {
-        events[dateKey] = [event];
-      }
-    });
-    
-    return events;
-  }, [mockEvents]);
-
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
     setModalOpen(true);
   };
+
+  // Selected date events
+  const selectedDateEvents = getEventsBySelectedDate(date);
 
   return (
     <div className="space-y-6 fade-in">
@@ -112,38 +50,11 @@ const Calendar = () => {
       </h1>
       
       <Card className="p-6 w-full glass">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold flex items-center gap-2">
-            <CalendarIcon className="h-6 w-6" />
-            {format(currentMonth, language === "en" ? "MMMM yyyy" : "MMMM yyyy")}
-          </h2>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => {
-                const prevMonth = new Date(currentMonth);
-                prevMonth.setMonth(prevMonth.getMonth() - 1);
-                setCurrentMonth(prevMonth);
-              }}
-              aria-label={language === "en" ? "Previous month" : "Vorheriger Monat"}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => {
-                const nextMonth = new Date(currentMonth);
-                nextMonth.setMonth(nextMonth.getMonth() + 1);
-                setCurrentMonth(nextMonth);
-              }}
-              aria-label={language === "en" ? "Next month" : "Nächster Monat"}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
+        <CalendarHeader 
+          currentMonth={currentMonth}
+          onPreviousMonth={previousMonth}
+          onNextMonth={nextMonth}
+        />
         
         <div className="grid grid-cols-1">
           <CalendarComponent
@@ -172,49 +83,18 @@ const Calendar = () => {
                 const dayEvents = eventsByDate[dateString] || [];
                 
                 return (
-                  <div className="w-full h-full min-h-[100px] p-1">
-                    <div className="text-base font-medium mb-1">
-                      {date.getDate()}
-                    </div>
-                    <div className="space-y-1">
-                      {dayEvents.map((event, index) => (
-                        <button
-                          key={event.id}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleEventClick(event);
-                          }}
-                          className="w-full text-left text-xs p-1 rounded hover:bg-accent truncate"
-                        >
-                          {event.time} - {event.company}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <CalendarDay 
+                    date={date}
+                    dayEvents={dayEvents}
+                    onEventClick={handleEventClick}
+                  />
                 );
               }
             }}
           />
         </div>
         
-        <div className="mt-6">
-          <Separator className="my-4" />
-          <div className="flex flex-wrap gap-4 justify-center text-base">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-status-wanted"></div>
-              <span>{language === "en" ? "Wanted" : "Gesucht"}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-status-process"></div>
-              <span>{language === "en" ? "In Process" : "In Bearbeitung"}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-status-found"></div>
-              <span>{language === "en" ? "Found" : "Gefunden"}</span>
-            </div>
-          </div>
-        </div>
+        <CalendarLegend />
       </Card>
 
       <EventModal
