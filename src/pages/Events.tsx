@@ -47,7 +47,10 @@ const Events = () => {
                   {language === "en" ? "Coach" : "Trainer"}: {event.coachName}
                 </p>
               </div>
-              <Badge className={getStatusColor(event.status)}>
+              <Badge 
+                className={`${getStatusColor(event.status)} status-badge`}
+                size="lg"
+              >
                 {getStatusText(event.status)}
               </Badge>
             </div>
@@ -62,7 +65,7 @@ const Events = () => {
                 {language === "en" ? "Column" : "Spalte"}: {event.column}
               </p>
             </div>
-            {user?.role === "mentor" && event.status === "wanted" && (
+            {user?.role === "mentor" && event.status === "open" && (
               <Button 
                 className="w-full mt-4"
                 onClick={(e) => {

@@ -54,9 +54,12 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         status: {
-          wanted: "#E11D48",
-          process: "#F59E0B",
-          found: "#10B981",
+          open: "#3B82F6",       // Blue
+          progress: "#8B5CF6",   // Purple
+          seekbackup: "#F59E0B", // Amber
+          found: "#10B981",      // Emerald
+          closed: "#6B7280",     // Gray
+          old: "#9CA3AF"         // Light Gray
         }
       },
       borderRadius: {
@@ -84,7 +87,7 @@ export default {
         fadeIn: "fadeIn 0.3s ease-in-out",
       },
       cssVariables: {
-        '--primary-rgb': '221, 70, 135', // Example RGB value for a primary color
+        '--primary-rgb': '59, 130, 246', // Updated to match the blue color
       },
     },
   },

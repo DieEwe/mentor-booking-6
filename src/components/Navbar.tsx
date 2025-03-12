@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
-import { Moon, Sun, Languages, Menu, Calendar, Users, User } from "lucide-react";
+import { Moon, Sun, Languages, Menu, Calendar, Users, User, List } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -15,6 +15,7 @@ const Navbar = () => {
   const menuItems = [
     { icon: Users, label: language === "en" ? "Events" : "Veranstaltungen", href: "/events" },
     { icon: Calendar, label: language === "en" ? "Calendar" : "Kalender", href: "/calendar" },
+    { icon: List, label: language === "en" ? "List" : "Liste", href: "/list" },
     { icon: User, label: language === "en" ? "Profile" : "Profil", href: "/profile" },
   ];
 

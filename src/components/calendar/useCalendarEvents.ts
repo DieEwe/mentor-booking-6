@@ -37,9 +37,29 @@ export const useCalendarEvents = (events: Event[]) => {
     });
   };
 
+  // Get event status counts for a specific date
+  const getStatusCountsForDate = (date: Date) => {
+    const eventsForDate = getEventsForDate(date);
+    const counts: Record<string, number> = {
+      open: 0,
+      progress: 0,
+      seekbackup: 0,
+      found: 0,
+      closed: 0,
+      old: 0
+    };
+    
+    eventsForDate.forEach(event => {
+      counts[event.status]++;
+    });
+    
+    return counts;
+  };
+
   return {
     eventsByDate,
     getEventsForDate,
-    getEventsBySelectedDate
+    getEventsBySelectedDate,
+    getStatusCountsForDate
   };
 };

@@ -1,5 +1,5 @@
 
-export type EventStatus = 'wanted' | 'process' | 'found';
+export type EventStatus = 'open' | 'progress' | 'seekbackup' | 'found' | 'closed' | 'old';
 
 export interface Event {
   id: string;
@@ -20,7 +20,7 @@ export const mockEvents: Event[] = [
     coachName: 'John Doe',
     company: 'Tech Corp',
     column: 1,
-    status: 'wanted'
+    status: 'open'
   },
   {
     id: '2',
@@ -39,7 +39,7 @@ export const mockEvents: Event[] = [
     coachName: 'Mike Johnson',
     company: 'Code Co',
     column: 3,
-    status: 'process'
+    status: 'progress'
   },
   {
     id: '4',
@@ -48,7 +48,7 @@ export const mockEvents: Event[] = [
     coachName: 'Sarah Williams',
     company: 'Data Systems',
     column: 1,
-    status: 'wanted'
+    status: 'open'
   },
   {
     id: '5',
@@ -57,7 +57,7 @@ export const mockEvents: Event[] = [
     coachName: 'Robert Chen',
     company: 'AI Research',
     column: 2,
-    status: 'process'
+    status: 'progress'
   },
   {
     id: '6',
@@ -76,7 +76,7 @@ export const mockEvents: Event[] = [
     coachName: 'Daniel Wilson',
     company: 'Security Systems',
     column: 2,
-    status: 'wanted'
+    status: 'seekbackup'
   },
   {
     id: '8',
@@ -86,6 +86,15 @@ export const mockEvents: Event[] = [
     company: 'Mobile Apps',
     column: 1,
     mentorId: '1',
-    status: 'found'
+    status: 'closed'
+  },
+  {
+    id: '9',
+    date: '2025-02-10',
+    time: '13:30',
+    coachName: 'James Miller',
+    company: 'Legacy Systems',
+    column: 3,
+    status: 'old'
   }
 ];
