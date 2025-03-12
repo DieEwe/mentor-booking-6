@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from "date-fns";
 import { Card } from "@/components/ui/card";
@@ -21,9 +20,8 @@ const Calendar = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { eventsByDate, getEventsBySelectedDate } = useCalendarEvents(mockEvents);
-  const { getStatusText, getStatusColor } = useStatusHelpers();
+  const { getStatusText, getCalendarEventStyle } = useStatusHelpers();
 
-  // Handle month navigation
   const previousMonth = () => {
     setCurrentMonth(prev => subMonths(prev, 1));
   };
@@ -44,18 +42,15 @@ const Calendar = () => {
     setModalOpen(true);
   };
 
-  // Calendar generation
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Get day names based on current language
   const dayNames = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(2021, 0, i + 1); // Sunday = 0, Monday = 1, etc.
+    const date = new Date(2021, 0, i + 1);
     return format(date, language === "en" ? "EEE" : "EEE");
   });
 
-  // Selected date events
   const selectedDateEvents = getEventsBySelectedDate(selectedDate);
 
   return (
@@ -89,9 +84,7 @@ const Calendar = () => {
           </div>
         </div>
         
-        {/* Calendar grid */}
         <div className="w-full mb-6">
-          {/* Day names */}
           <div className="grid grid-cols-7 mb-2">
             {dayNames.map((day, i) => (
               <div 
@@ -103,7 +96,6 @@ const Calendar = () => {
             ))}
           </div>
           
-          {/* Calendar days */}
           <div className="grid grid-cols-7 gap-1 auto-rows-fr">
             {daysInMonth.map((day) => {
               const dateString = format(day, "yyyy-MM-dd");
@@ -133,11 +125,7 @@ const Calendar = () => {
                       <button
                         key={event.id}
                         onClick={(e) => handleEventClick(event, e)}
-                        className={`w-full text-left text-xs p-1.5 rounded-sm truncate ${
-                          event.status === "open" ? "bg-status-open/20 hover:bg-status-open/40 border-l-2 border-status-open" :
-                          event.status === "progress" ? "bg-status-progress/20 hover:bg-status-progress/40 border-l-2 border-status-progress" :
-                          "bg-status-found/20 hover:bg-status-found/40 border-l-2 border-status-found"
-                        }`}
+                        className={`w-full text-left text-xs p-1.5 rounded-sm truncate ${getCalendarEventStyle(event.status)}`}
                       >
                         {event.time} - {event.company}
                       </button>
@@ -157,7 +145,7 @@ const Calendar = () => {
         open={modalOpen}
         onOpenChange={setModalOpen}
         getStatusText={getStatusText}
-        getStatusColor={getStatusColor}
+        getStatusColor={getCalendarEventStyle}
       />
     </div>
   );

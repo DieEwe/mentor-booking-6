@@ -7,11 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Event } from '../types/event';
 import { mockUsers } from '../types/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useStatusHelpers } from '@/components/calendar/StatusUtils';
 import { CalendarIcon, Clock, Building2, UserRound, Columns3 } from "lucide-react";
 
 interface EventModalProps {
@@ -26,11 +26,10 @@ const EventModal: React.FC<EventModalProps> = ({
   event,
   open,
   onOpenChange,
-  getStatusText,
-  getStatusColor,
 }) => {
   const { language } = useTheme();
   const { user } = useAuth();
+  const { getStatusText, getStatusColor } = useStatusHelpers();
   const mentor = event?.mentorId ? mockUsers.find(u => u.id === event.mentorId) : null;
   const isCoach = user?.role === 'coach';
 
@@ -54,9 +53,9 @@ const EventModal: React.FC<EventModalProps> = ({
                 {language === 'en' ? 'Time:' : 'Zeit:'} {event.time}
               </p>
             </div>
-            <Badge className={getStatusColor(event.status)}>
-              {getStatusText(event.status)}
-            </Badge>
+            <div className={`px-3 py-1.5 rounded-md ${getStatusColor(event.status)}`}>
+              <span className="text-sm font-medium">{getStatusText(event.status)}</span>
+            </div>
           </div>
 
           <div className="space-y-3 pt-2 border-t">

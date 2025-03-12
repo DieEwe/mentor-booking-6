@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { mockEvents, Event } from "../types/event";
 import { useTheme } from "../contexts/ThemeContext";
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { 
-  ListIcon, // Renamed from List to ListIcon to avoid conflict
+  ListIcon, 
   Calendar as CalendarIcon, 
   Search, 
   SortAsc, 
@@ -30,11 +29,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const EventList = () => { // Renamed component from List to EventList
+const EventList = () => {
   const { language } = useTheme();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { getStatusText, getStatusColor } = useStatusHelpers();
+  const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Event>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -112,7 +111,7 @@ const EventList = () => { // Renamed component from List to EventList
               {['open', 'progress', 'seekbackup', 'found', 'closed', 'old'].map(status => (
                 <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)}>
                   <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${getStatusColor(status as any).split(' ')[0]}`}></div>
+                    <div className={`w-3 h-3 rounded-full ${getStatusDotColor(status as any)}`}></div>
                     {getStatusText(status)}
                   </div>
                 </DropdownMenuItem>
@@ -137,12 +136,10 @@ const EventList = () => { // Renamed component from List to EventList
       {statusFilter && (
         <div className="flex items-center gap-2">
           <span>{language === "en" ? "Filtered by:" : "Gefiltert nach:"}</span>
-          <Badge 
-            className={getStatusColor(statusFilter as any)}
-            size="lg"
-          >
-            {getStatusText(statusFilter)}
-          </Badge>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm">
+            <div className={`w-2.5 h-2.5 rounded-full ${getStatusDotColor(statusFilter as any)}`}></div>
+            <span>{getStatusText(statusFilter)}</span>
+          </div>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -219,12 +216,9 @@ const EventList = () => { // Renamed component from List to EventList
                   <TableCell className="font-medium">{event.company}</TableCell>
                   <TableCell>{event.coachName}</TableCell>
                   <TableCell>
-                    <Badge 
-                      className={getStatusColor(event.status)}
-                      size="lg"
-                    >
-                      {getStatusText(event.status)}
-                    </Badge>
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${getStatusColor(event.status)}`}>
+                      <span className="text-xs font-medium">{getStatusText(event.status)}</span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

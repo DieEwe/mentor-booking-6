@@ -47,10 +47,7 @@ const Events = () => {
                   {language === "en" ? "Coach" : "Trainer"}: {event.coachName}
                 </p>
               </div>
-              <Badge 
-                className={`${getStatusColor(event.status)} status-badge`}
-                size="lg"
-              >
+              <Badge className={`${getStatusColor(event.status)} border px-2.5 py-1.5 text-xs font-medium rounded-md`}>
                 {getStatusText(event.status)}
               </Badge>
             </div>

@@ -44,25 +44,70 @@ export const useStatusHelpers = () => {
     }
   };
 
-  // Function to get event status color
+  // Professional color palette for status indicators
   const getStatusColor = (status: EventStatus) => {
     switch (status) {
       case "open":
-        return "bg-status-open text-white";
+        return "bg-blue-100 text-blue-800 border-blue-300";
       case "progress":
-        return "bg-status-progress text-white";
+        return "bg-purple-100 text-purple-800 border-purple-300";
       case "seekbackup":
-        return "bg-status-seekbackup text-white";
+        return "bg-amber-100 text-amber-800 border-amber-300";
       case "found":
-        return "bg-status-found text-white";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300";
       case "closed":
-        return "bg-status-closed text-white";
+        return "bg-gray-100 text-gray-800 border-gray-300";
       case "old":
-        return "bg-status-old text-white";
+        return "bg-slate-100 text-slate-600 border-slate-300";
       default:
-        return "bg-muted";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-  return { getStatusText, getStatusColor };
+  // For calendar event indicators (more subtle)
+  const getCalendarEventStyle = (status: EventStatus) => {
+    switch (status) {
+      case "open":
+        return "border-l-2 border-blue-400 bg-blue-50";
+      case "progress":
+        return "border-l-2 border-purple-400 bg-purple-50";
+      case "seekbackup":
+        return "border-l-2 border-amber-400 bg-amber-50";
+      case "found":
+        return "border-l-2 border-emerald-400 bg-emerald-50";
+      case "closed":
+        return "border-l-2 border-gray-400 bg-gray-50";
+      case "old":
+        return "border-l-2 border-slate-400 bg-slate-50";
+      default:
+        return "border-l-2 border-gray-400 bg-gray-50";
+    }
+  };
+
+  // For status dots in legend and small indicators
+  const getStatusDotColor = (status: EventStatus) => {
+    switch (status) {
+      case "open":
+        return "bg-blue-400";
+      case "progress":
+        return "bg-purple-400";
+      case "seekbackup":
+        return "bg-amber-400";
+      case "found":
+        return "bg-emerald-400";
+      case "closed":
+        return "bg-gray-400";
+      case "old":
+        return "bg-slate-400";
+      default:
+        return "bg-gray-400";
+    }
+  };
+
+  return { 
+    getStatusText, 
+    getStatusColor, 
+    getCalendarEventStyle, 
+    getStatusDotColor 
+  };
 };

@@ -5,18 +5,18 @@ import { useStatusHelpers } from "./StatusUtils";
 
 const CalendarLegend = () => {
   const { language } = useTheme();
-  const { getStatusText } = useStatusHelpers();
+  const { getStatusText, getStatusDotColor } = useStatusHelpers();
   
   const statuses = ['open', 'progress', 'seekbackup', 'found', 'closed', 'old'];
   
   return (
     <div className="mt-6">
       <Separator className="my-4" />
-      <div className="flex flex-wrap gap-4 justify-center text-base">
+      <div className="flex flex-wrap gap-4 justify-center text-sm">
         {statuses.map(status => (
           <div key={status} className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full bg-status-${status}`}></div>
-            <span>{getStatusText(status)}</span>
+            <div className={`w-3 h-3 rounded-full ${getStatusDotColor(status as any)}`}></div>
+            <span className="text-muted-foreground">{getStatusText(status)}</span>
           </div>
         ))}
       </div>
