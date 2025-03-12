@@ -1,6 +1,6 @@
 
 import { useMemo } from "react";
-import { isSameDay } from "date-fns";
+import { isSameDay, parseISO } from "date-fns";
 import { Event } from "@/types/event";
 
 export const useCalendarEvents = (events: Event[]) => {
@@ -28,11 +28,11 @@ export const useCalendarEvents = (events: Event[]) => {
   };
 
   // Filter events by selected date
-  const getEventsBySelectedDate = (selectedDate: Date | undefined): Event[] => {
+  const getEventsBySelectedDate = (selectedDate: Date): Event[] => {
     if (!selectedDate) return [];
     
     return events.filter((event) => {
-      const eventDate = new Date(event.date);
+      const eventDate = parseISO(event.date);
       return isSameDay(eventDate, selectedDate);
     });
   };
