@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { 
-  List, 
+  ListIcon, // Renamed from List to ListIcon to avoid conflict
   Calendar as CalendarIcon, 
   Search, 
   SortAsc, 
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const List = () => {
+const EventList = () => { // Renamed component from List to EventList
   const { language } = useTheme();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,7 +79,7 @@ const List = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <List className="h-6 w-6" />
+          <ListIcon className="h-6 w-6" />
           <h1 className="text-3xl font-bold">
             {language === "en" ? "Events List" : "Veranstaltungsliste"}
           </h1>
@@ -244,4 +244,4 @@ const List = () => {
   );
 };
 
-export default List;
+export default EventList;
