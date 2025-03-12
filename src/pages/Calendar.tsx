@@ -134,8 +134,8 @@ const Calendar = () => {
                         key={event.id}
                         onClick={(e) => handleEventClick(event, e)}
                         className={`w-full text-left text-xs p-1.5 rounded-sm truncate ${
-                          event.status === "wanted" ? "bg-status-wanted/20 hover:bg-status-wanted/40 border-l-2 border-status-wanted" :
-                          event.status === "process" ? "bg-status-process/20 hover:bg-status-process/40 border-l-2 border-status-process" :
+                          event.status === "open" ? "bg-status-open/20 hover:bg-status-open/40 border-l-2 border-status-open" :
+                          event.status === "progress" ? "bg-status-progress/20 hover:bg-status-progress/40 border-l-2 border-status-progress" :
                           "bg-status-found/20 hover:bg-status-found/40 border-l-2 border-status-found"
                         }`}
                       >
