@@ -14,15 +14,11 @@ const CalendarDay = ({ date, dayEvents, onEventClick }: CalendarDayProps) => {
       <div className="text-base font-medium mb-2">
         {date.getDate()}
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1 overflow-auto max-h-[80px]">
         {dayEvents.map((event) => (
           <button
             key={event.id}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onEventClick(event);
-            }}
+            onClick={() => onEventClick(event)}
             className={`w-full text-left text-xs p-1.5 rounded-sm truncate ${
               event.status === "wanted" ? "bg-status-wanted/20 hover:bg-status-wanted/30" :
               event.status === "process" ? "bg-status-process/20 hover:bg-status-process/30" :

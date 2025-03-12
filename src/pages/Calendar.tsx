@@ -63,20 +63,8 @@ const Calendar = () => {
             onSelect={setDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
-            className="w-full rounded-md text-base"
+            className="w-full rounded-md text-lg"
             showOutsideDays={true}
-            modifiers={{
-              hasEvent: (day) => {
-                const dateString = day.toISOString().split('T')[0];
-                return !!eventsByDate[dateString];
-              }
-            }}
-            modifiersStyles={{
-              hasEvent: {
-                fontWeight: 'bold',
-                color: 'var(--primary)',
-              }
-            }}
             components={{
               DayContent: ({ date }) => {
                 const dateString = date.toISOString().split('T')[0];

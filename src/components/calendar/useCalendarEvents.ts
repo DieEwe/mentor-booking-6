@@ -22,6 +22,7 @@ export const useCalendarEvents = (events: Event[]) => {
 
   // Get events for a specific date
   const getEventsForDate = (date: Date): Event[] => {
+    if (!date) return [];
     const dateString = date.toISOString().split('T')[0];
     return eventsByDate[dateString] || [];
   };
@@ -32,7 +33,7 @@ export const useCalendarEvents = (events: Event[]) => {
     
     return events.filter((event) => {
       const eventDate = new Date(event.date);
-      return selectedDate ? isSameDay(eventDate, selectedDate) : false;
+      return isSameDay(eventDate, selectedDate);
     });
   };
 
