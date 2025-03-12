@@ -56,14 +56,14 @@ const Calendar = () => {
           onNextMonth={nextMonth}
         />
         
-        <div className="grid grid-cols-1">
+        <div className="w-full">
           <CalendarComponent
             mode="single"
             selected={date}
             onSelect={setDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
-            className="w-full rounded-md"
+            className="w-full rounded-md text-base"
             showOutsideDays={true}
             modifiers={{
               hasEvent: (day) => {

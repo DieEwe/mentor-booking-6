@@ -25,6 +25,7 @@ const App = () => {
                 <Route path="/events" element={<Events />} />
                 <Route path="/calendar" element={<Calendar />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/" element={<Navigate to="/events" replace />} />
               </Route>
             </Routes>
