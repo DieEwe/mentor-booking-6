@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { mockEvents, Event } from "../types/event";
 import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
+import { useAuth } from "../contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -14,13 +15,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { 
   ListIcon, 
   Calendar as CalendarIcon, 
   Search, 
   SortAsc, 
   SortDesc,
-  Filter 
+  Filter,
+  SendHorizonal
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -28,19 +31,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const EventList = () => {
   const { language } = useTheme();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Event>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
+  const isMentor = user?.role === 'mentor';
 
   const handleEventClick = (event: Event) => {
     navigate(`/events/${event.id}`);
+  };
+
+  const handleRequestMentor = (event: Event, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation
+    toast.success(
+      language === "en" 
+        ? "Request sent successfully" 
+        : "Anfrage erfolgreich gesendet"
+    );
   };
 
   const toggleSortDirection = () => {
@@ -107,7 +121,7 @@ const EventList = () => {
               <DropdownMenuItem onClick={() => setStatusFilter(null)}>
                 {language === "en" ? "All" : "Alle"}
               </DropdownMenuItem>
-              {['open', 'progress', 'seekbackup', 'found', 'closed', 'old'].map(status => (
+              {['open', 'progress', 'seekbackup', 'found', 'closed', 'archived'].map(status => (
                 <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)}>
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${getStatusDotColor(status as any)}`}></div>
@@ -150,7 +164,7 @@ const EventList = () => {
         </div>
       )}
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -194,12 +208,13 @@ const EventList = () => {
                 )}
               </TableHead>
               <TableHead>{language === "en" ? "Status" : "Status"}</TableHead>
+              {isMentor && <TableHead className="text-right">{language === "en" ? "Actions" : "Aktionen"}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredEvents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={isMentor ? 6 : 5} className="text-center py-8">
                   {language === "en" ? "No events found" : "Keine Veranstaltungen gefunden"}
                 </TableCell>
               </TableRow>
@@ -219,6 +234,20 @@ const EventList = () => {
                       {getStatusText(event.status)}
                     </div>
                   </TableCell>
+                  {isMentor && (
+                    <TableCell className="text-right">
+                      {['open', 'progress', 'seekbackup'].includes(event.status) && (
+                        <Button 
+                          size="sm" 
+                          onClick={(e) => handleRequestMentor(event, e)}
+                          className="ml-auto"
+                        >
+                          <SendHorizonal className="h-4 w-4 mr-1" />
+                          {language === "en" ? "Request" : "Bewerben"}
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}

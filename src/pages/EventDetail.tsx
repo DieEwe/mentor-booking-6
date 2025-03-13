@@ -9,7 +9,7 @@ import { useStatusHelpers } from '@/components/calendar/StatusUtils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { ArrowLeft, CalendarIcon, Clock, Building2, UserRound, Columns3, Calendar } from 'lucide-react';
+import { ArrowLeft, CalendarIcon, Clock, Building2, UserRound, Columns3, Calendar, SendHorizonal } from 'lucide-react';
 
 const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -101,7 +101,7 @@ const EventDetail = () => {
         </div>
       </div>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-md">
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
@@ -118,6 +118,7 @@ const EventDetail = () => {
                 className="sm:self-start"
                 onClick={handleRequestMentor}
               >
+                <SendHorizonal className="h-4 w-4 mr-2" />
                 {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
               </Button>
             )}

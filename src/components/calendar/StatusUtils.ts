@@ -51,38 +51,38 @@ export const useStatusHelpers = () => {
     if (theme === 'dark') {
       switch (status) {
         case "open":
-          return "bg-blue-800/50 text-blue-100 border-blue-600";
+          return "bg-blue-800/40 text-blue-100 border border-blue-700/60";
         case "progress":
-          return "bg-purple-800/50 text-purple-100 border-purple-600";
+          return "bg-purple-800/40 text-purple-100 border border-purple-700/60";
         case "seekbackup":
-          return "bg-amber-800/50 text-amber-100 border-amber-600";
+          return "bg-amber-800/40 text-amber-100 border border-amber-700/60";
         case "found":
-          return "bg-emerald-800/50 text-emerald-100 border-emerald-600";
+          return "bg-emerald-800/40 text-emerald-100 border border-emerald-700/60";
         case "closed":
-          return "bg-gray-700/50 text-gray-100 border-gray-600";
+          return "bg-gray-800/40 text-gray-100 border border-gray-700/60";
         case "old":
         case "archived":
-          return "bg-slate-700/50 text-slate-100 border-slate-600";
+          return "bg-slate-800/40 text-slate-100 border border-slate-700/60";
         default:
-          return "bg-gray-700/50 text-gray-100 border-gray-600";
+          return "bg-gray-800/40 text-gray-100 border border-gray-700/60";
       }
     } else {
       switch (status) {
         case "open":
-          return "bg-blue-50 text-blue-700 border-blue-200";
+          return "bg-blue-50 text-blue-700 border border-blue-200";
         case "progress":
-          return "bg-purple-50 text-purple-700 border-purple-200";
+          return "bg-purple-50 text-purple-700 border border-purple-200";
         case "seekbackup":
-          return "bg-amber-50 text-amber-700 border-amber-200";
+          return "bg-amber-50 text-amber-700 border border-amber-200";
         case "found":
-          return "bg-emerald-50 text-emerald-700 border-emerald-200";
+          return "bg-emerald-50 text-emerald-700 border border-emerald-200";
         case "closed":
-          return "bg-gray-100 text-gray-700 border-gray-200";
+          return "bg-gray-100 text-gray-700 border border-gray-200";
         case "old":
         case "archived":
-          return "bg-slate-100 text-slate-700 border-slate-200";
+          return "bg-slate-100 text-slate-700 border border-slate-200";
         default:
-          return "bg-gray-100 text-gray-700 border-gray-200";
+          return "bg-gray-100 text-gray-700 border border-gray-200";
       }
     }
   };

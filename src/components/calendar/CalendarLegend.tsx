@@ -7,7 +7,7 @@ const CalendarLegend = () => {
   const { language, theme } = useTheme();
   const { getStatusText, getStatusDotColor } = useStatusHelpers();
   
-  const statuses = ['open', 'progress', 'seekbackup', 'found', 'closed', 'old'];
+  const statuses = ['open', 'progress', 'seekbackup', 'found', 'closed', 'archived'];
   
   return (
     <div className="mt-6">

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
+import { toast } from "sonner";
 
 const Events = () => {
   const { user } = useAuth();
@@ -17,6 +18,15 @@ const Events = () => {
 
   const handleEventClick = (event: Event) => {
     navigate(`/events/${event.id}`);
+  };
+
+  const handleRequestMentor = (event: Event, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    toast.success(
+      language === "en" 
+        ? "Request sent successfully" 
+        : "Anfrage erfolgreich gesendet"
+    );
   };
 
   return (
@@ -63,10 +73,7 @@ const Events = () => {
             {isMentor && ['open', 'progress', 'seekbackup'].includes(event.status) && (
               <Button 
                 className="w-full mt-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/events/${event.id}`);
-                }}
+                onClick={(e) => handleRequestMentor(event, e)}
               >
                 {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
               </Button>
