@@ -132,7 +132,13 @@ button {
   @apply bg-gray-800/70;
 }
 
-.dark .border {
+/* Fixing circular dependency - removed the problematic rule */
+/* .dark .border {
+  @apply border-gray-700;
+} */
+
+/* Instead, use a more specific class for dark mode borders */
+.dark-mode-border {
   @apply border-gray-700;
 }
 
