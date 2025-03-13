@@ -12,7 +12,9 @@ import { mockUsers } from '../types/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useStatusHelpers } from '@/components/calendar/StatusUtils';
-import { CalendarIcon, Clock, Building2, UserRound, Columns3 } from "lucide-react";
+import { CalendarIcon, Clock, Building2, UserRound, Columns3, SendHorizonal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface EventModalProps {
   event: Event | null;
@@ -32,8 +34,19 @@ const EventModal: React.FC<EventModalProps> = ({
   const { getStatusText, getStatusColor } = useStatusHelpers();
   const mentor = event?.mentorId ? mockUsers.find(u => u.id === event.mentorId) : null;
   const isCoach = user?.role === 'coach';
+  const isMentor = user?.role === 'mentor';
+  const canRequest = isMentor && event && ['open', 'progress', 'seekbackup'].includes(event.status);
 
   if (!event) return null;
+  
+  const handleRequestMentor = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast.success(
+      language === "en" 
+        ? "Request sent successfully" 
+        : "Anfrage erfolgreich gesendet"
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -89,6 +102,18 @@ const EventModal: React.FC<EventModalProps> = ({
               </p>
             )}
           </div>
+
+          {canRequest && (
+            <div className="pt-4 border-t">
+              <Button 
+                className="w-full"
+                onClick={handleRequestMentor}
+              >
+                <SendHorizonal className="h-4 w-4 mr-2" />
+                {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

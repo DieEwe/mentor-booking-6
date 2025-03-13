@@ -1,4 +1,3 @@
-
 import { useTheme } from "@/contexts/ThemeContext";
 import { EventStatus } from "@/types/event";
 
@@ -46,43 +45,43 @@ export const useStatusHelpers = () => {
     }
   };
 
-  // Professional color palette for status indicators (light/dark mode aware)
+  // IMPROVED: Professional color palette for status indicators (light/dark mode aware)
   const getStatusColor = (status: EventStatus) => {
     if (theme === 'dark') {
       switch (status) {
         case "open":
-          return "bg-blue-800/40 text-blue-100 border border-blue-700/60";
+          return "bg-blue-900/50 text-blue-200 border border-blue-600";
         case "progress":
-          return "bg-purple-800/40 text-purple-100 border border-purple-700/60";
+          return "bg-purple-900/50 text-purple-200 border border-purple-600";
         case "seekbackup":
-          return "bg-amber-800/40 text-amber-100 border border-amber-700/60";
+          return "bg-amber-900/50 text-amber-200 border border-amber-600";
         case "found":
-          return "bg-emerald-800/40 text-emerald-100 border border-emerald-700/60";
+          return "bg-emerald-900/50 text-emerald-200 border border-emerald-600";
         case "closed":
-          return "bg-gray-800/40 text-gray-100 border border-gray-700/60";
+          return "bg-gray-800/50 text-gray-200 border border-gray-600";
         case "old":
         case "archived":
-          return "bg-slate-800/40 text-slate-100 border border-slate-700/60";
+          return "bg-slate-800/50 text-slate-200 border border-slate-600";
         default:
-          return "bg-gray-800/40 text-gray-100 border border-gray-700/60";
+          return "bg-gray-800/50 text-gray-200 border border-gray-600";
       }
     } else {
       switch (status) {
         case "open":
-          return "bg-blue-50 text-blue-700 border border-blue-200";
+          return "bg-blue-50 text-blue-800 border border-blue-300 shadow-sm";
         case "progress":
-          return "bg-purple-50 text-purple-700 border border-purple-200";
+          return "bg-purple-50 text-purple-800 border border-purple-300 shadow-sm";
         case "seekbackup":
-          return "bg-amber-50 text-amber-700 border border-amber-200";
+          return "bg-amber-50 text-amber-800 border border-amber-300 shadow-sm";
         case "found":
-          return "bg-emerald-50 text-emerald-700 border border-emerald-200";
+          return "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-sm";
         case "closed":
-          return "bg-gray-100 text-gray-700 border border-gray-200";
+          return "bg-gray-100 text-gray-800 border border-gray-300 shadow-sm";
         case "old":
         case "archived":
-          return "bg-slate-100 text-slate-700 border border-slate-200";
+          return "bg-slate-100 text-slate-800 border border-slate-300 shadow-sm";
         default:
-          return "bg-gray-100 text-gray-700 border border-gray-200";
+          return "bg-gray-100 text-gray-800 border border-gray-300 shadow-sm";
       }
     }
   };
@@ -128,24 +127,24 @@ export const useStatusHelpers = () => {
     }
   };
 
-  // For status dots in legend and small indicators
+  // IMPROVED: For status dots in legend and small indicators with better contrast
   const getStatusDotColor = (status: EventStatus) => {
     switch (status) {
       case "open":
-        return theme === 'dark' ? "bg-blue-400" : "bg-blue-400";
+        return theme === 'dark' ? "bg-blue-500" : "bg-blue-500";
       case "progress":
-        return theme === 'dark' ? "bg-purple-400" : "bg-purple-400";
+        return theme === 'dark' ? "bg-purple-500" : "bg-purple-500";
       case "seekbackup":
-        return theme === 'dark' ? "bg-amber-400" : "bg-amber-400";
+        return theme === 'dark' ? "bg-amber-500" : "bg-amber-500";
       case "found":
-        return theme === 'dark' ? "bg-emerald-400" : "bg-emerald-400";
+        return theme === 'dark' ? "bg-emerald-500" : "bg-emerald-500";
       case "closed":
-        return theme === 'dark' ? "bg-gray-400" : "bg-gray-400";
+        return theme === 'dark' ? "bg-gray-500" : "bg-gray-500";
       case "old":
       case "archived":
-        return theme === 'dark' ? "bg-slate-400" : "bg-slate-400";
+        return theme === 'dark' ? "bg-slate-500" : "bg-slate-500";
       default:
-        return theme === 'dark' ? "bg-gray-400" : "bg-gray-400";
+        return theme === 'dark' ? "bg-gray-500" : "bg-gray-500";
     }
   };
 

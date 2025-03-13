@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
 import { toast } from "sonner";
+import { SendHorizonal } from "lucide-react";
 
 const Events = () => {
   const { user } = useAuth();
@@ -75,6 +76,7 @@ const Events = () => {
                 className="w-full mt-4"
                 onClick={(e) => handleRequestMentor(event, e)}
               >
+                <SendHorizonal className="h-4 w-4 mr-2" />
                 {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
               </Button>
             )}
