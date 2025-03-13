@@ -1,8 +1,9 @@
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { mockEvents, Event } from "../types/event";
 import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
-import EventModal from "@/components/EventModal";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -31,17 +32,15 @@ import { Button } from "@/components/ui/button";
 
 const EventList = () => {
   const { language } = useTheme();
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Event>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
 
   const handleEventClick = (event: Event) => {
-    setSelectedEvent(event);
-    setModalOpen(true);
+    navigate(`/events/${event.id}`);
   };
 
   const toggleSortDirection = () => {
@@ -216,8 +215,8 @@ const EventList = () => {
                   <TableCell className="font-medium">{event.company}</TableCell>
                   <TableCell>{event.coachName}</TableCell>
                   <TableCell>
-                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${getStatusColor(event.status)}`}>
-                      <span className="text-xs font-medium">{getStatusText(event.status)}</span>
+                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
+                      {getStatusText(event.status)}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -226,14 +225,6 @@ const EventList = () => {
           </TableBody>
         </Table>
       </div>
-
-      <EventModal
-        event={selectedEvent}
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        getStatusText={getStatusText}
-        getStatusColor={getStatusColor}
-      />
     </div>
   );
 };

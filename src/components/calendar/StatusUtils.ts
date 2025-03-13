@@ -20,6 +20,7 @@ export const useStatusHelpers = () => {
         case "closed":
           return "Closed";
         case "old":
+        case "archived":
           return "Archived";
         default:
           return status;
@@ -37,6 +38,7 @@ export const useStatusHelpers = () => {
         case "closed":
           return "Abgeschlossen";
         case "old":
+        case "archived":
           return "Archiviert";
         default:
           return status;
@@ -49,19 +51,20 @@ export const useStatusHelpers = () => {
     if (theme === 'dark') {
       switch (status) {
         case "open":
-          return "bg-blue-900 text-blue-200 border-blue-700";
+          return "bg-blue-800/50 text-blue-100 border-blue-600";
         case "progress":
-          return "bg-purple-900 text-purple-200 border-purple-700";
+          return "bg-purple-800/50 text-purple-100 border-purple-600";
         case "seekbackup":
-          return "bg-amber-900 text-amber-200 border-amber-700";
+          return "bg-amber-800/50 text-amber-100 border-amber-600";
         case "found":
-          return "bg-emerald-900 text-emerald-200 border-emerald-700";
+          return "bg-emerald-800/50 text-emerald-100 border-emerald-600";
         case "closed":
-          return "bg-gray-800 text-gray-200 border-gray-700";
+          return "bg-gray-700/50 text-gray-100 border-gray-600";
         case "old":
-          return "bg-slate-800 text-slate-200 border-slate-700";
+        case "archived":
+          return "bg-slate-700/50 text-slate-100 border-slate-600";
         default:
-          return "bg-gray-800 text-gray-200";
+          return "bg-gray-700/50 text-gray-100 border-gray-600";
       }
     } else {
       switch (status) {
@@ -74,11 +77,12 @@ export const useStatusHelpers = () => {
         case "found":
           return "bg-emerald-50 text-emerald-700 border-emerald-200";
         case "closed":
-          return "bg-gray-50 text-gray-700 border-gray-200";
+          return "bg-gray-100 text-gray-700 border-gray-200";
         case "old":
-          return "bg-slate-50 text-slate-600 border-slate-200";
+        case "archived":
+          return "bg-slate-100 text-slate-700 border-slate-200";
         default:
-          return "bg-gray-50 text-gray-700";
+          return "bg-gray-100 text-gray-700 border-gray-200";
       }
     }
   };
@@ -98,6 +102,7 @@ export const useStatusHelpers = () => {
         case "closed":
           return "border-l-2 border-gray-400 bg-gray-800/30 calendar-event";
         case "old":
+        case "archived":
           return "border-l-2 border-slate-400 bg-slate-800/30 calendar-event";
         default:
           return "border-l-2 border-gray-400 bg-gray-800/30 calendar-event";
@@ -115,6 +120,7 @@ export const useStatusHelpers = () => {
         case "closed":
           return "border-l-2 border-gray-400 bg-gray-50 calendar-event";
         case "old":
+        case "archived":
           return "border-l-2 border-slate-400 bg-slate-50 calendar-event";
         default:
           return "border-l-2 border-gray-400 bg-gray-50 calendar-event";
@@ -136,6 +142,7 @@ export const useStatusHelpers = () => {
       case "closed":
         return theme === 'dark' ? "bg-gray-400" : "bg-gray-400";
       case "old":
+      case "archived":
         return theme === 'dark' ? "bg-slate-400" : "bg-slate-400";
       default:
         return theme === 'dark' ? "bg-gray-400" : "bg-gray-400";

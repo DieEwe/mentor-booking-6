@@ -29,6 +29,7 @@ const CalendarHeader = ({
           size="icon" 
           onClick={onPreviousMonth}
           aria-label={language === "en" ? "Previous month" : "Vorheriger Monat"}
+          className="rounded-full transition-all hover:bg-primary/10 hover:text-primary"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
@@ -37,6 +38,7 @@ const CalendarHeader = ({
           size="icon" 
           onClick={onNextMonth}
           aria-label={language === "en" ? "Next month" : "Nächster Monat"}
+          className="rounded-full transition-all hover:bg-primary/10 hover:text-primary"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>

@@ -1,5 +1,5 @@
 
-export type EventStatus = 'open' | 'progress' | 'seekbackup' | 'found' | 'closed' | 'old';
+export type EventStatus = 'open' | 'progress' | 'seekbackup' | 'found' | 'closed' | 'old' | 'archived';
 
 export interface Event {
   id: string;
@@ -95,6 +95,6 @@ export const mockEvents: Event[] = [
     coachName: 'James Miller',
     company: 'Legacy Systems',
     column: 3,
-    status: 'old'
+    status: 'archived'
   }
 ];

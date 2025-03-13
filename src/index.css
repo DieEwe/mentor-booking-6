@@ -110,11 +110,32 @@
 
 /* Status badge styling */
 .status-badge {
-  @apply py-1 px-3 text-sm font-medium;
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
 }
 
 /* Make sure calendar events are visible in dark mode */
 .dark .calendar-event {
-  @apply text-foreground !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  @apply text-foreground border-opacity-30 bg-opacity-30;
+}
+
+/* Button hover effects */
+button {
+  @apply transition-all duration-200;
+}
+
+.rounded-button {
+  @apply rounded-full hover:shadow-md;
+}
+
+/* Enhance dark mode styles */
+.dark .bg-card {
+  @apply bg-gray-800/70;
+}
+
+.dark .border {
+  @apply border-gray-700;
+}
+
+.dark .glass {
+  @apply bg-gray-900/70;
 }

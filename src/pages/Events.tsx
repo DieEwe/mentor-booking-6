@@ -1,24 +1,22 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { mockEvents, Event } from "../types/event";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useTheme } from "../contexts/ThemeContext";
-import EventModal from "@/components/EventModal";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
 
 const Events = () => {
   const { user } = useAuth();
   const { language } = useTheme();
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { getStatusText, getStatusColor } = useStatusHelpers();
+  const isMentor = user?.role === 'mentor';
 
   const handleEventClick = (event: Event) => {
-    setSelectedEvent(event);
-    setModalOpen(true);
+    navigate(`/events/${event.id}`);
   };
 
   return (
@@ -47,9 +45,9 @@ const Events = () => {
                   {language === "en" ? "Coach" : "Trainer"}: {event.coachName}
                 </p>
               </div>
-              <Badge className={`${getStatusColor(event.status)} border px-2.5 py-1.5 text-xs font-medium rounded-md`}>
+              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
                 {getStatusText(event.status)}
-              </Badge>
+              </div>
             </div>
             <div className="mt-4 space-y-2">
               <p className="text-sm">
@@ -62,28 +60,20 @@ const Events = () => {
                 {language === "en" ? "Column" : "Spalte"}: {event.column}
               </p>
             </div>
-            {user?.role === "mentor" && event.status === "open" && (
+            {isMentor && ['open', 'progress', 'seekbackup'].includes(event.status) && (
               <Button 
                 className="w-full mt-4"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Request mentor functionality would go here
+                  navigate(`/events/${event.id}`);
                 }}
               >
-                {language === "en" ? "Request to Mentor" : "Anfrage als Mentor"}
+                {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
               </Button>
             )}
           </Card>
         ))}
       </div>
-
-      <EventModal
-        event={selectedEvent}
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        getStatusText={getStatusText}
-        getStatusColor={getStatusColor}
-      />
     </div>
   );
 };
