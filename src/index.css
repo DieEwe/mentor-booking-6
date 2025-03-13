@@ -28,13 +28,13 @@
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 47.4% 11.2%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 80% 50%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -46,7 +46,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 217.2 80% 50%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
@@ -64,8 +64,27 @@
   @apply bg-background/80 backdrop-blur-lg border border-border/50 shadow-lg;
 }
 
+.dark .glass {
+  @apply bg-background/50 backdrop-blur-lg border border-border/60 shadow-lg;
+}
+
 .fade-in {
   @apply animate-fadeIn;
+}
+
+.slide-in-from-top {
+  animation: slideInFromTop 0.3s ease forwards;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Additional styling for calendar */
@@ -83,10 +102,19 @@
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
 }
 
-/* Larger status badges */
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Status badge styling */
 .status-badge {
-  @apply py-1 px-3 text-sm font-semibold;
+  @apply py-1 px-3 text-sm font-medium;
+}
+
+/* Make sure calendar events are visible in dark mode */
+.dark .calendar-event {
+  @apply text-foreground !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
