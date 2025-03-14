@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -9,6 +8,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
 import { toast } from "sonner";
 import { SendHorizonal } from "lucide-react";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the confirmation modal
 
 const Events = () => {
   const { user } = useAuth();
@@ -16,18 +16,52 @@ const Events = () => {
   const navigate = useNavigate();
   const { getStatusText, getStatusColor } = useStatusHelpers();
   const isMentor = user?.role === 'mentor';
+  
+  // Add state for the confirmation modal
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEventClick = (event: Event) => {
     navigate(`/events/${event.id}`);
   };
 
-  const handleRequestMentor = (event: Event, e: React.MouseEvent) => {
+  // Update this to open the confirmation modal instead of immediately showing toast
+  const handleRequestMentorClick = (event: Event, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling
-    toast.success(
-      language === "en" 
-        ? "Request sent successfully" 
-        : "Anfrage erfolgreich gesendet"
-    );
+    setSelectedEvent(event);
+    setConfirmModalOpen(true);
+  };
+  
+  // This function will be called when the mentor confirms in the modal
+  const handleConfirmRequest = async () => {
+    setIsLoading(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    try {
+      // Mock success scenario
+      toast.success(
+        language === "en" 
+          ? "Request sent successfully" 
+          : "Anfrage erfolgreich gesendet"
+      );
+      
+      // Close the modal
+      setConfirmModalOpen(false);
+      
+      // In a real app, you might want to update the UI to reflect the change
+      // For example, changing the button state or refreshing the event list
+    } catch (error) {
+      toast.error(
+        language === "en" 
+          ? "Failed to send request" 
+          : "Fehler beim Senden der Anfrage"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,7 +108,7 @@ const Events = () => {
             {isMentor && ['open', 'progress', 'seekbackup'].includes(event.status) && (
               <Button 
                 className="w-full mt-4"
-                onClick={(e) => handleRequestMentor(event, e)}
+                onClick={(e) => handleRequestMentorClick(event, e)}
               >
                 <SendHorizonal className="h-4 w-4 mr-2" />
                 {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
@@ -83,6 +117,15 @@ const Events = () => {
           </Card>
         ))}
       </div>
+      
+      {/* Add the confirmation modal */}
+      <ConfirmationModal
+        event={selectedEvent}
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        onConfirm={handleConfirmRequest}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

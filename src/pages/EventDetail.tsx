@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +8,7 @@ import { useStatusHelpers } from '@/components/calendar/StatusUtils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import ConfirmationModal from '../components/ConfirmationModal'; // Import the confirmation modal
 import { ArrowLeft, CalendarIcon, Clock, Building2, UserRound, Columns3, Calendar, SendHorizonal } from 'lucide-react';
 
 const EventDetail = () => {
@@ -19,6 +19,11 @@ const EventDetail = () => {
   const { getStatusText, getStatusColor } = useStatusHelpers();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Add state for the confirmation modal
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isRequestLoading, setIsRequestLoading] = useState(false);
+  const [isBackupRequest, setIsBackupRequest] = useState(false);
 
   useEffect(() => {
     // In a real app, we would fetch from API
@@ -33,13 +38,51 @@ const EventDetail = () => {
   const canRequest = isMentor && 
     event && 
     ['open', 'progress', 'seekbackup'].includes(event.status);
+  
+  const canRequestBackup = isMentor &&
+    event &&
+    event.status === 'seekbackup';
 
-  const handleRequestMentor = () => {
-    toast.success(
-      language === "en" 
-        ? "Request sent successfully" 
-        : "Anfrage erfolgreich gesendet"
-    );
+  // Open confirmation modal when request button is clicked
+  const handleRequestButtonClick = (isBackup: boolean = false) => {
+    if (!event) return;
+    
+    setIsBackupRequest(isBackup);
+    setConfirmModalOpen(true);
+  };
+
+  // Handle confirmation from modal
+  const handleConfirmRequest = async () => {
+    if (!event) return;
+    
+    setIsRequestLoading(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    try {
+      // Mock success scenario
+      toast.success(
+        language === "en" 
+          ? isBackupRequest 
+            ? "Backup request sent successfully" 
+            : "Request sent successfully" 
+          : isBackupRequest 
+            ? "Backup-Anfrage erfolgreich gesendet" 
+            : "Anfrage erfolgreich gesendet"
+      );
+      
+      // Close the modal
+      setConfirmModalOpen(false);
+    } catch (error) {
+      toast.error(
+        language === "en" 
+          ? "Failed to send request" 
+          : "Fehler beim Senden der Anfrage"
+      );
+    } finally {
+      setIsRequestLoading(false);
+    }
   };
 
   if (loading) {
@@ -116,10 +159,21 @@ const EventDetail = () => {
             {canRequest && (
               <Button 
                 className="sm:self-start"
-                onClick={handleRequestMentor}
+                onClick={() => handleRequestButtonClick(false)}
               >
                 <SendHorizonal className="h-4 w-4 mr-2" />
                 {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
+              </Button>
+            )}
+            
+            {canRequestBackup && (
+              <Button 
+                variant="secondary"
+                className="sm:self-start"
+                onClick={() => handleRequestButtonClick(true)}
+              >
+                <Columns3 className="h-4 w-4 mr-2" />
+                {language === "en" ? "Request as Backup" : "Als Backup anfragen"}
               </Button>
             )}
           </div>
@@ -206,6 +260,16 @@ const EventDetail = () => {
           </div>
         </div>
       </Card>
+      
+      {/* Add the confirmation modal */}
+      <ConfirmationModal
+        event={event}
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        onConfirm={handleConfirmRequest}
+        isBackupRequest={isBackupRequest}
+        isLoading={isRequestLoading}
+      />
     </div>
   );
 };

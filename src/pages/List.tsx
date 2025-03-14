@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockEvents, Event } from "../types/event";
@@ -32,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the confirmation modal
 
 const EventList = () => {
   const { language } = useTheme();
@@ -44,17 +44,48 @@ const EventList = () => {
   const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
   const isMentor = user?.role === 'mentor';
 
+  // Add state for the confirmation modal
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleEventClick = (event: Event) => {
     navigate(`/events/${event.id}`);
   };
 
-  const handleRequestMentor = (event: Event, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent navigation
-    toast.success(
-      language === "en" 
-        ? "Request sent successfully" 
-        : "Anfrage erfolgreich gesendet"
-    );
+  // Update this to open the confirmation modal
+  const handleRequestMentorClick = (event: Event, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setSelectedEvent(event);
+    setConfirmModalOpen(true);
+  };
+  
+  // Handle confirmation from modal
+  const handleConfirmRequest = async () => {
+    setIsLoading(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    try {
+      // Mock success scenario
+      toast.success(
+        language === "en" 
+          ? "Request sent successfully" 
+          : "Anfrage erfolgreich gesendet"
+      );
+      
+      // Close the modal
+      setConfirmModalOpen(false);
+    } catch (error) {
+      toast.error(
+        language === "en" 
+          ? "Failed to send request" 
+          : "Fehler beim Senden der Anfrage"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleSortDirection = () => {
@@ -239,7 +270,7 @@ const EventList = () => {
                       {['open', 'progress', 'seekbackup'].includes(event.status) && (
                         <Button 
                           size="sm" 
-                          onClick={(e) => handleRequestMentor(event, e)}
+                          onClick={(e) => handleRequestMentorClick(event, e)}
                           className="ml-auto"
                         >
                           <SendHorizonal className="h-4 w-4 mr-1" />
@@ -254,6 +285,15 @@ const EventList = () => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Add the confirmation modal */}
+      <ConfirmationModal
+        event={selectedEvent}
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        onConfirm={handleConfirmRequest}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
