@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Event } from '../types/event';
-import { mockUsers } from '../types/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { SendHorizonal } from 'lucide-react';
 
@@ -26,7 +24,6 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
   onRequestMentor
 }) => {
   const { user } = useAuth();
-  const mentor = event.mentorId ? mockUsers.find(u => u.id === event.mentorId) : null;
   const isCoach = user?.role === 'coach';
   const isMentor = user?.role === 'mentor';
   const canRequest = isMentor && ['open', 'progress', 'seekbackup'].includes(event.status);
@@ -48,24 +45,6 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
           <p className="text-base text-muted-foreground">
             {event.time} - {event.coachName}
           </p>
-          {mentor && (
-            <p className="text-base mt-1">
-              {language === "en" ? "Mentor: " : "Mentor: "}
-              {isCoach ? (
-                <Link
-                  to={`/profile/${mentor.id}`}
-                  className="font-medium text-primary hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {mentor.firstName} {mentor.lastName}
-                </Link>
-              ) : (
-                <span className="font-medium">
-                  {mentor.firstName} {mentor.lastName}
-                </span>
-              )}
-            </p>
-          )}
         </div>
         <div className="flex items-center gap-3">
           <p className="text-base bg-secondary/70 px-3 py-1 rounded-full">

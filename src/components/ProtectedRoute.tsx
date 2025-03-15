@@ -1,34 +1,32 @@
-
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useEffect, useState } from 'react';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user } = useAuth();
-  const [isChecking, setIsChecking] = useState(true);
-
-  useEffect(() => {
-    // Give the AuthContext time to load the user from localStorage
-    const timer = setTimeout(() => {
-      setIsChecking(false);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Show nothing during the brief check to avoid flickering
-  if (isChecking) {
-    return null;
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  
+  console.log("Protected route check:", { 
+    user: user?.email, 
+    loading,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Maximum 3-second loading
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+          <div>Loading authentication...</div>
+        </div>
+      </div>
+    );
   }
-
-  if (!user || user.role === 'guest') {
+  
+  if (!user) {
+    console.log("No authenticated user, redirecting to login");
     return <Navigate to="/login" replace />;
   }
-
+  
   return <>{children}</>;
 };
 

@@ -1,26 +1,44 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { Loader2, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
   const navigate = useNavigate();
   const { login } = useAuth();
   const { language } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    
+    if (!email || !password) {
+      setError(language === "en" ? "Email and password are required" : "E-Mail und Passwort sind erforderlich");
+      return;
+    }
+    
+    setIsLoading(true);
+    
     try {
+      console.log("Login attempt:", email);
       await login(email, password);
-      navigate("/events");
-    } catch (err) {
-      setError(language === "en" ? "Invalid credentials" : "Ungültige Anmeldedaten");
+      
+      // Force navigation after login
+      console.log("Login successful, navigating to events");
+      window.location.href = "/events"; // Use direct browser navigation for reliability
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || (language === "en" ? "Login failed" : "Anmeldung fehlgeschlagen"));
+      setIsLoading(false); // Only reset loading on error
     }
   };
 
@@ -44,6 +62,8 @@ const Login = () => {
               placeholder={language === "en" ? "Email" : "E-Mail"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
@@ -52,13 +72,27 @@ const Login = () => {
               placeholder={language === "en" ? "Password" : "Passwort"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              autoComplete="current-password"
             />
           </div>
+          
           {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
+            <div className="flex items-center gap-2 p-3 text-sm bg-destructive/10 text-destructive rounded-md">
+              <AlertCircle className="h-4 w-4" />
+              <p>{error}</p>
+            </div>
           )}
-          <Button type="submit" className="w-full">
-            {language === "en" ? "Sign in" : "Anmelden"}
+          
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {language === "en" ? "Signing in..." : "Anmelden..."}
+              </>
+            ) : (
+              language === "en" ? "Sign in" : "Anmelden"
+            )}
           </Button>
         </form>
       </div>

@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockEvents, Event } from "../types/event";
+import { Event, EventStatus } from "../types/event"; // Add EventStatus import here
 import { useTheme } from "../contexts/ThemeContext";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
 import { useAuth } from "../contexts/AuthContext";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -22,7 +21,8 @@ import {
   SortAsc, 
   SortDesc,
   Filter,
-  SendHorizonal
+  SendHorizonal,
+  Loader2 // Add this import
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import ConfirmationModal from "../components/ConfirmationModal"; // Import the confirmation modal
+import { supabase } from "../lib/supabase";
+import { fetchCoachNames } from "../utils/coachUtils";
 
 const EventList = () => {
   const { language } = useTheme();
@@ -40,7 +42,7 @@ const EventList = () => {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Event>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<EventStatus | null>(null);
   const { getStatusText, getStatusColor, getStatusDotColor } = useStatusHelpers();
   const isMentor = user?.role === 'mentor';
 
@@ -48,6 +50,9 @@ const EventList = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
 
   const handleEventClick = (event: Event) => {
     navigate(`/events/${event.id}`);
@@ -62,13 +67,18 @@ const EventList = () => {
   
   // Handle confirmation from modal
   const handleConfirmRequest = async () => {
+    if (!selectedEvent) return;
+  
     setIsLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+  
     try {
-      // Mock success scenario
+      // Call Supabase RPC function to request joining an event
+      const { error } = await supabase.rpc('mentorbooking_request_to_join_event', {
+        event_id: selectedEvent.id
+      });
+      
+      if (error) throw error;
+      
       toast.success(
         language === "en" 
           ? "Request sent successfully" 
@@ -77,10 +87,36 @@ const EventList = () => {
       
       // Close the modal
       setConfirmModalOpen(false);
-    } catch (error) {
+      
+      // Refresh events data
+      const { data } = await supabase
+        .from('mentorbooking_events')
+        .select(`
+          *,
+          coach:coach_id (id, user_profile(username))
+        `)
+        .eq('id', selectedEvent.id)
+        .single();
+        
+      if (data) {
+        // Update the event in the local state
+        setEvents(prev => 
+          prev.map(event => 
+            event.id === selectedEvent.id 
+              ? {
+                  ...event,
+                  requestingMentors: data.requesting_mentors || [],
+                  status: data.status,
+                } 
+              : event
+          )
+        );
+      }
+    } catch (error: any) {
+      console.error('Error requesting to join event:', error);
       toast.error(
         language === "en" 
-          ? "Failed to send request" 
+          ? error.message || "Failed to send request" 
           : "Fehler beim Senden der Anfrage"
       );
     } finally {
@@ -92,13 +128,74 @@ const EventList = () => {
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
   };
 
-  const filteredEvents = mockEvents
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoadingEvents(true);
+      
+      try {
+        // Fetch events
+        const { data, error } = await supabase
+          .from('mentorbooking_events')
+          .select('*')
+          .order('date', { ascending: true });
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          // Get unique coach IDs
+          const coachIds = [...new Set(data.map(event => event.coach_id))];
+          
+          // Fetch coach names using the utility
+          const coachNames = await fetchCoachNames(coachIds);
+          
+          // Transform events with coach names
+          const transformedEvents: Event[] = data.map(event => ({
+            id: event.id,
+            title: event.title || '',
+            company: event.company,
+            date: event.date,
+            time: event.time,
+            description: event.description || '',
+            coach_id: event.coach_id,
+            coachName: coachNames[event.coach_id] || 'Unknown',  // Use fetched coach name
+            status: event.status as EventStatus,
+            requestingMentors: event.requesting_mentors || [],
+            acceptedMentors: event.accepted_mentors || [],
+            backupRequests: event.backup_requests || [],
+            backupMentors: event.backup_mentors || [],
+            column: event.column || 0
+          }));
+          
+          setEvents(transformedEvents);
+        } else {
+          setEvents([]);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error(
+          language === "en" 
+            ? "Failed to load events" 
+            : "Fehler beim Laden der Veranstaltungen"
+        );
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+    
+    fetchEvents();
+  }, []);
+
+  const handleStatusFilterChange = (status: EventStatus | null) => {
+    setStatusFilter(status);
+  };
+
+  const filteredEvents = events
     .filter(event => 
       (statusFilter ? event.status === statusFilter : true) &&
       (search ? 
         event.company.toLowerCase().includes(search.toLowerCase()) ||
         event.coachName.toLowerCase().includes(search.toLowerCase()) ||
-        event.date.includes(search)
+        event.date.toString().includes(search)  // Convert to string first
       : true)
     )
     .sort((a, b) => {
@@ -149,11 +246,11 @@ const EventList = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setStatusFilter(null)}>
+              <DropdownMenuItem onClick={() => handleStatusFilterChange(null)}>
                 {language === "en" ? "All" : "Alle"}
               </DropdownMenuItem>
               {['open', 'progress', 'seekbackup', 'found', 'closed', 'archived'].map(status => (
-                <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)}>
+                <DropdownMenuItem key={status} onClick={() => handleStatusFilterChange(status as EventStatus)}>
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${getStatusDotColor(status as any)}`}></div>
                     {getStatusText(status)}
@@ -187,7 +284,7 @@ const EventList = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => setStatusFilter(null)}
+            onClick={() => handleStatusFilterChange(null)}
             className="h-6 w-6 p-0"
           >
             ×
@@ -243,7 +340,15 @@ const EventList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredEvents.length === 0 ? (
+            {isLoadingEvents ? (
+              <TableRow>
+                <TableCell colSpan={isMentor ? 6 : 5} className="h-40 text-center">
+                  <div className="flex justify-center items-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : filteredEvents.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={isMentor ? 6 : 5} className="text-center py-8">
                   {language === "en" ? "No events found" : "Keine Veranstaltungen gefunden"}

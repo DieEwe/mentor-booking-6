@@ -1,4 +1,3 @@
-
 export type UserRole = 'guest' | 'mentor' | 'coach';
 
 export interface User {
@@ -8,6 +7,11 @@ export interface User {
   lastName: string;
   role: UserRole;
   company?: string;
+  profilePictureUrl?: string;
+  description?: string;
+  quote?: string;
+  hasVisibleDisability?: boolean;
+  hasNonvisibleDisability?: boolean;
 }
 
 // Mock data - TODO: Replace with Supabase Authentication

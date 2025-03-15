@@ -8,20 +8,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Event } from '../types/event';
-import { mockUsers } from '../types/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useStatusHelpers } from '@/components/calendar/StatusUtils';
 import { toast } from "sonner";
-import ConfirmationModal from './ConfirmationModal'; // Import the confirmation modal
+import { supabase } from '../lib/supabase'; // Add this import
+import ConfirmationModal from './ConfirmationModal';
 import { CalendarIcon, Clock, Building2, UserRound, Columns3, SendHorizonal } from "lucide-react";
 
 interface EventModalProps {
   event: Event | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  getStatusText: (status: string) => string;
-  getStatusColor: (status: string) => string;
+  getStatusText?: (status: string) => string;  // Add these two props
+  getStatusColor?: (status: string) => string; // to match what you're passing
 }
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -38,7 +38,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [isRequestLoading, setIsRequestLoading] = useState(false);
   const [isBackupRequest, setIsBackupRequest] = useState(false);
 
-  const mentor = event?.mentorId ? mockUsers.find(u => u.id === event.mentorId) : null;
+  // Use current user role instead of mock users
   const isCoach = user?.role === 'coach';
   const isMentor = user?.role === 'mentor';
   const canRequest = isMentor && 
@@ -60,13 +60,22 @@ const EventModal: React.FC<EventModalProps> = ({
 
   // Handle confirmation from modal
   const handleConfirmRequest = async () => {
+    if (!event) return;
+    
     setIsRequestLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
     try {
-      // Mock success scenario
+      // Call the appropriate RPC function based on request type
+      const { error } = isBackupRequest 
+        ? await supabase.rpc('mentorbooking_request_backup_role', {
+            event_id: event.id
+          })
+        : await supabase.rpc('mentorbooking_request_to_join_event', {
+            event_id: event.id
+          });
+      
+      if (error) throw error;
+      
       toast.success(
         language === "en" 
           ? isBackupRequest 
@@ -79,12 +88,12 @@ const EventModal: React.FC<EventModalProps> = ({
       
       // Close the modal
       setConfirmModalOpen(false);
-      // Optionally close the event modal too
+      // Close the event modal too
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       toast.error(
         language === "en" 
-          ? "Failed to send request" 
+          ? error.message || "Failed to send request" 
           : "Fehler beim Senden der Anfrage"
       );
     } finally {
@@ -114,7 +123,10 @@ const EventModal: React.FC<EventModalProps> = ({
                   <Building2 className="h-5 w-5 text-muted-foreground" />
                   {language === 'en' ? 'Company:' : 'Unternehmen:'} {event.company}
                 </p>
-                {/* More event details... */}
+                <p className="text-lg flex items-center gap-2">
+                  <UserRound className="h-5 w-5 text-muted-foreground" />
+                  {language === 'en' ? 'Coach:' : 'Coach:'} {event.coachName || 'Unknown'}
+                </p>
               </div>
               <div className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(event.status)}`}>
                 {getStatusText(event.status)}
@@ -125,6 +137,7 @@ const EventModal: React.FC<EventModalProps> = ({
               {canRequest && (
                 <Button 
                   onClick={(e) => handleRequestButtonClick(false, e)}
+                  disabled={isRequestLoading}
                 >
                   <SendHorizonal className="h-4 w-4 mr-2" />
                   {language === "en" ? "Request to Mentor" : "Als Mentor bewerben"}
@@ -135,6 +148,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 <Button 
                   variant="secondary"
                   onClick={(e) => handleRequestButtonClick(true, e)}
+                  disabled={isRequestLoading}
                 >
                   <Columns3 className="h-4 w-4 mr-2" />
                   {language === "en" ? "Request as Backup" : "Als Backup anfragen"}
@@ -154,7 +168,6 @@ const EventModal: React.FC<EventModalProps> = ({
         </DialogContent>
       </Dialog>
       
-      {/* Add the confirmation modal */}
       <ConfirmationModal
         event={event}
         open={confirmModalOpen}

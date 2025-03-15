@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from "date-fns";
 import { Card } from "@/components/ui/card";
-import { mockEvents } from "../types/event";
 import { useTheme } from "../contexts/ThemeContext";
 import EventModal from "@/components/EventModal";
-import type { Event } from "../types/event";
+import { Event, EventStatus } from '../types/event';
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import CalendarLegend from "@/components/calendar/CalendarLegend";
 import { useCalendarEvents } from "@/components/calendar/useCalendarEvents";
 import { useStatusHelpers } from "@/components/calendar/StatusUtils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "../lib/supabase";
+import { toast } from "sonner";
+import { fetchCoachNames } from "../utils/coachUtils";
 
 const Calendar = () => {
   const { language } = useTheme();
@@ -18,8 +20,62 @@ const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { eventsByDate, getEventsBySelectedDate } = useCalendarEvents(mockEvents);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      
+      try {
+        const { data, error } = await supabase
+          .from('mentorbooking_events')
+          .select('*')
+          .order('date', { ascending: true });
+        
+        if (error) throw error;
+        
+        // Get unique coach IDs
+        const coachIds = [...new Set(data.map(event => event.coach_id))];
+        
+        // Fetch coach names using the utility
+        const coachNames = await fetchCoachNames(coachIds);
+        
+        const transformedEvents: Event[] = data.map(event => ({
+          id: event.id,
+          title: event.title || '',
+          company: event.company,
+          date: event.date,
+          time: event.time,
+          description: event.description || '',
+          coach_id: event.coach_id,
+          coachName: coachNames[event.coach_id] || 'Unknown',  // Use fetched coach name
+          status: event.status as EventStatus,
+          requestingMentors: event.requesting_mentors || [],
+          acceptedMentors: event.accepted_mentors || [],
+          backupRequests: event.backup_requests || [],
+          backupMentors: event.backup_mentors || [],
+          column: 0
+        }));
+        
+        setEvents(transformedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error(
+          language === "en" 
+            ? "Failed to load calendar events" 
+            : "Fehler beim Laden der Veranstaltungen"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchEvents();
+  }, []);
+
+  const { eventsByDate, getEventsBySelectedDate } = useCalendarEvents(events);
   const { getStatusText, getCalendarEventStyle } = useStatusHelpers();
 
   const previousMonth = () => {
